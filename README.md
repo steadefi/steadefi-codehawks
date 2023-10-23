@@ -280,7 +280,7 @@ forge test --match-test test_createDeposit -vvvv
     - Just like other smart contract vaults (like ERC-4626 standard), the vaults are also susceptible to a Inflation/Donation Attack that can be carried out by the first depositor to the vault. We will mitigated this by being the first to deposit a small amount to any new vaults and sending the vault share tokens to the vault contract itself, so it will not be accessible to anyone.
 - **Chainlink price feed dependency**
     - The protocol is dependent on Chainlink price feeds operating accurately and correctly. In situations where it does not, the oracle contracts would already revert, therefore preventing further actions with the vaults.
-    - It should be assumed that for all accepted tokens in this protocol, there is a price feed for it (the "GM" LP tokens' price comes from GMX itslef which uses Chainlink as well)
+    - It should be assumed that for all accepted tokens in this protocol, there is a price feed for it (the "GM" LP tokens' price comes from GMX itself which uses Chainlink as well)
 - **Keeper dependency**
     - The strategy vaults are dependent on keepers running to compound and rebalance the vaults periodically. It should be assumed that the keepers will always be able to run 24/7 to trigger the right functions. However, if there can be issues arising due to such functions, please report them as findings.
 - **GMX Callback failures**
@@ -288,6 +288,6 @@ forge test --match-test test_createDeposit -vvvv
 - **No zero address on constructor and functions**
     - We have removed zero address checks on constructor and functions unless they are critical to the core/logic of the vault. This is to reduce gas fees incurred for every trigger of the function, as the function may revert naturally when a zero address is passed in. For e.g., no zero address check needed for getting token price/value from oracles.
 - **Post successful compound() may result in vault's health being out of balance**
-    - It is OK for deposit/withdrawals when vault status is out of range, as any deposits will bring vault closer to target leverage and delta, and withdrawals will stil obtain their assets accordingly.
+    - It is OK for deposit/withdrawals when vault status is out of range, as any deposits will bring vault closer to target leverage and delta, and withdrawals will still obtain their assets accurately and accordingly. If this is found to NOT be the case, then please report this as a finding.
 - **There needs to be enough lending capacity for a successful rebalance**
     - There can be a situation where there is not enough lending capacity to rebalance the vault correctly (e.g. not enough lending capacity to borrow, so the vault's debt ratio is under the lower debt ratio parameters). The strategy vault can only wait until there is enough lending capacity in order to execute a successul rebalance.
