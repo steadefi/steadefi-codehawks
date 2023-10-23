@@ -291,3 +291,12 @@ forge test --match-test test_createDeposit -vvvv
     - It is OK for deposit/withdrawals when vault status is out of range, as any deposits will bring vault closer to target leverage and delta, and withdrawals will still obtain their assets accurately and accordingly. If this is found to NOT be the case, then please report this as a finding.
 - **There needs to be enough lending capacity for a successful rebalance**
     - There can be a situation where there is not enough lending capacity to rebalance the vault correctly (e.g. not enough lending capacity to borrow, so the vault's debt ratio is under the lower debt ratio parameters). The strategy vault can only wait until there is enough lending capacity in order to execute a successul rebalance.
+- **Swap deadline is consciously set as block.timestamp for certain functions**
+    - In: `GMXDeposit.processDepositFailureLiquidityWithdrawal() and `GMXProcessWithdraw.processWithdraw()`
+    - Reminder: A swap deadline timestamp is passed to protect against miners delaying swap transactions until a more favourable time for them to process it.
+    - However for the above 2 functions that implements a swap, we decided to allow the deadline to be set as the current block timestamp for these function as they are triggered as a follow up function (by a callback/keeper) and not directly by a user/keeper. If this follow on functions revert due to the swap transaction being processed after a set fixed deadline timestamp, this will cause the vault to be in a "stuck" state. To resolve this, this function will have to be called again with an updated deadline until it succeeds/a miner processes the transaction.
+- **It is expected that Neutral strategy vaults will have a leverage factor of 3x and above**
+    - A leverage of less than 3x (e.g. 2x) for Neutral strategies may not work to correctly to borrow enough long token to hedge while still adhering to the correct leverage factor.
+    - The issue will arise in `GMXManager.calcBorrow()` and `GMXReader.additionalCapacity()` where the computation of shortToken (tokenB) to borrow may underflow.
+    - However, Long strategies are OK to have 2x as they simply borrow short token to leverage up.
+    - As it does not make sense to deploy a Neutral strategy vault with less than 3x leverage as the strategy will fail, we did not add checks to this in the constructor function.

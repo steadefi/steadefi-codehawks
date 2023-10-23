@@ -699,155 +699,122 @@ All actions possible to a Strategy Vault and their expected outcome and impact, 
 ## Strategy Vault Sequence Diagrams
 High level deposit, withdraw, rebalance add, rebalance remove, compound and emergency flows.
 
+### Strategy Vault Deposit Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Deposit Sequence Flow
+---
+flowchart TD
+  F1(deposit) -->|addLiquidity to GMX| S1{Success?}
+  S1{Success?} -->|Yes| F2(afterDepositExecution)
+  S1{Success?} -->|No| F3(afterDepositCancellation)
 
-<details>
-  <summary>
+  F2(afterDepositExecution) --> F4(processDeposit)
+  F4(processDeposit) -->|afterDepositChecks| S2{Success?}
 
-  ### Strategy Vault Deposit Sequence Flow
-  </summary>
+  S2{Success?} -->|Yes| DC[DepositCompleted]
+  S2{Success?} -->|No| DF[DepositFailed]
 
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Deposit Sequence Flow
-  ---
-  flowchart TD
-    F1(deposit) -->|addLiquidity to GMX| S1{Success?}
-    S1{Success?} -->|Yes| F2(afterDepositExecution)
-    S1{Success?} -->|No| F3(afterDepositCancellation)
+  DF[DepositFailed] -->|Keeper to call| F5(processDepositFailure)
+  F5(processDepositFailure) --> F6(processDepositFailureLiquidityWithdrawal)
 
-    F2(afterDepositExecution) --> F4(processDeposit)
-    F4(processDeposit) -->|afterDepositChecks| S2{Success?}
-
-    S2{Success?} -->|Yes| DC[DepositCompleted]
-    S2{Success?} -->|No| DF[DepositFailed]
-
-    DF[DepositFailed] -->|Keeper to call| F5(processDepositFailure)
-    F5(processDepositFailure) --> F6(processDepositFailureLiquidityWithdrawal)
-
-    F3(afterDepositCancellation) --> F7(processDepositCancellation)
-  ```
-</details>
-
-
-<details>
-  <summary>
-
-  ### Strategy Vault Withdraw Sequence Flow
-  </summary>
-
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Withdraw Sequence Flow
-  ---
-  flowchart TD
-    F1(deposit) -->|removeLiquidity from GMX| S1{Success?}
-    S1{Success?} -->|Yes| F2(afterWithdrawExecution)
-    S1{Success?} -->|No| F3(afterWithdrawCancellation)
-
-    F2(afterWithdrawExecution) --> F4(processWithdraw)
-    F4(processWithdraw) -->|afterWithdrawChecks| S2{Success?}
-
-    S2{Success?} -->|Yes| DC[WithdrawCompleted]
-    S2{Success?} -->|No| DF[WithdrawFailed]
-
-    DF[WithdrawFailed] -->|Keeper to call| F5(processWithdrawFailure)
-    F5(processWithdrawFailure) --> F6(processWithdrawFailureLiquidityWithdrawal)
-
-    F3(afterWithdrawCancellation) --> F7(processWithdrawCancellation)
-  ```
-</details>
-
-<details>
-  <summary>
-
-  ### Strategy Vault Rebalance Add Sequence Flow
-  </summary>
-
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Rebalance Add Sequence Flow
-  ---
-  flowchart TD
-    F1(rebalanceAdd) -->|addLiquidity to GMX| S1{Success?}
-    S1{Success?} -->|Yes| F2(afterDepositExecution)
-    S1{Success?} -->|No| F3(afterDepositCancellation)
-
-    F2(afterDepositExecution) --> F4(processRebalanceAdd)
-    F4(processRebalanceAdd) -->|afterRebalanceChecks| S2{Success?}
-
-    S2{Success?} -->|Yes| DC[RebalanceSuccess]
-    S2{Success?} -->|No| DF[RebalanceOpen]
-
-    F3(afterDepositCancellation) --> F7(processRebalanceAddCancellation)
+  F3(afterDepositCancellation) --> F7(processDepositCancellation)
 ```
-</details>
 
-<details>
-  <summary>
 
-  ### Strategy Vault Rebalance Remove Sequence Flow
-  </summary>
+### Strategy Vault Withdraw Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Withdraw Sequence Flow
+---
+flowchart TD
+  F1(deposit) -->|removeLiquidity from GMX| S1{Success?}
+  S1{Success?} -->|Yes| F2(afterWithdrawExecution)
+  S1{Success?} -->|No| F3(afterWithdrawCancellation)
 
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Rebalance Remove Sequence Flow
-  ---
-  flowchart TD
-    F1(rebalanceRemove) -->|removeLiquidity from GMX| S1{Success?}
-    S1{Success?} -->|Yes| F2(afterDepositExecution)
-    S1{Success?} -->|No| F3(afterDepositCancellation)
+  F2(afterWithdrawExecution) --> F4(processWithdraw)
+  F4(processWithdraw) -->|afterWithdrawChecks| S2{Success?}
 
-    F2(afterDepositExecution) --> F4(processRebalanceRemove)
-    F4(processRebalanceRemove) -->|afterRebalanceChecks| S2{Success?}
+  S2{Success?} -->|Yes| DC[WithdrawCompleted]
+  S2{Success?} -->|No| DF[WithdrawFailed]
 
-    S2{Success?} -->|Yes| DC[RebalanceSuccess]
-    S2{Success?} -->|No| DF[RebalanceOpen]
+  DF[WithdrawFailed] -->|Keeper to call| F5(processWithdrawFailure)
+  F5(processWithdrawFailure) --> F6(processWithdrawFailureLiquidityWithdrawal)
 
-    F3(afterDepositCancellation) --> F7(processRebalanceRemoveCancellation)
-  ```
-</details>
+  F3(afterWithdrawCancellation) --> F7(processWithdrawCancellation)
+```
 
-<details>
-  <summary>
 
-  ### Strategy Vault Compound Sequence Flow
-  </summary>
+### Strategy Vault Rebalance Add Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Rebalance Add Sequence Flow
+---
+flowchart TD
+  F1(rebalanceAdd) -->|addLiquidity to GMX| S1{Success?}
+  S1{Success?} -->|Yes| F2(afterDepositExecution)
+  S1{Success?} -->|No| F3(afterDepositCancellation)
 
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Compound Sequence Flow
-  ---
-  flowchart TD
-    F1(compound) -->|addLiquidity to GMX| S1{Success?}
-    S1{Success?} -->|Yes| F2([afterDepositExecution])
-    S1{Success?} -->|No| F3(afterDepositCancellation)
+  F2(afterDepositExecution) --> F4(processRebalanceAdd)
+  F4(processRebalanceAdd) -->|afterRebalanceChecks| S2{Success?}
 
-    F2(afterDepositExecution) --> F4(processCompound)
-    F4(processCompound) --> CS(Compound)
+  S2{Success?} -->|Yes| DC[RebalanceSuccess]
+  S2{Success?} -->|No| DF[RebalanceOpen]
 
-    F3(afterDepositCancellation) --> F7(processCompoundCancellation)
-  ```
-  </details>
+  F3(afterDepositCancellation) --> F7(processRebalanceAddCancellation)
+```
 
-<details>
-  <summary>
 
-  ### Strategy Vault Emergency Sequence Flow
-  </summary>
+### Strategy Vault Rebalance Remove Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Rebalance Remove Sequence Flow
+---
+flowchart TD
+  F1(rebalanceRemove) -->|removeLiquidity from GMX| S1{Success?}
+  S1{Success?} -->|Yes| F2(afterDepositExecution)
+  S1{Success?} -->|No| F3(afterDepositCancellation)
 
-  ```mermaid
-  ---
-  title: GMX Strategy Vault Rebalance Emergency Flow
-  ---
-  flowchart TD
-    F1(emergencyPause) -->|removeLiquidity from GMX| EP[EmergencyPaused]
+  F2(afterDepositExecution) --> F4(processRebalanceRemove)
+  F4(processRebalanceRemove) -->|afterRebalanceChecks| S2{Success?}
 
-    EP[EmergencyPaused] --> ER(emergencyResume)
-    ER(emergencyResume) --> F2(afterDepositExecution)
-    F2(afterDepositExecution) --> PER(processEmergencyResume) --> Open
+  S2{Success?} -->|Yes| DC[RebalanceSuccess]
+  S2{Success?} -->|No| DF[RebalanceOpen]
 
-    EP[EmergencyPaused] --> EC(emergencyClose)
+  F3(afterDepositCancellation) --> F7(processRebalanceRemoveCancellation)
+```
 
-    EC(emergencyClose) --> EW(emergencyWithdraw)
-  ```
-</details>
+
+### Strategy Vault Compound Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Compound Sequence Flow
+---
+flowchart TD
+  F1(compound) -->|addLiquidity to GMX| S1{Success?}
+  S1{Success?} -->|Yes| F2([afterDepositExecution])
+  S1{Success?} -->|No| F3(afterDepositCancellation)
+
+  F2(afterDepositExecution) --> F4(processCompound)
+  F4(processCompound) --> CS(Compound)
+
+  F3(afterDepositCancellation) --> F7(processCompoundCancellation)
+```
+
+
+### Strategy Vault Emergency Sequence Flow
+```mermaid
+---
+title: GMX Strategy Vault Rebalance Emergency Flow
+---
+flowchart TD
+  F1(emergencyPause) -->|removeLiquidity from GMX| EP[EmergencyPaused]
+
+  EP[EmergencyPaused] --> ER(emergencyResume)
+  ER(emergencyResume) --> F2(afterDepositExecution)
+  F2(afterDepositExecution) --> PER(processEmergencyResume) --> Open
+
+  EP[EmergencyPaused] --> EC(emergencyClose)
+
+  EC(emergencyClose) --> EW(emergencyWithdraw)
+```
