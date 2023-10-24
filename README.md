@@ -15,10 +15,10 @@
 ​
 
 ## Stats
-- nSLOC: 2,324
-- Complexity Score: 1,590
+- nSLOC: 2,289
+- Complexity Score: 1,634
 - Dollars per nSLOC: ~$15
-- Dollars per Complexity: ~$22
+- Dollars per Complexity: ~$21
 ​
 ## About
 Steadefi provides vaults with automated risk management for earning leveraged yields effectively and passively in bull, crab and bear markets. With lending and leveraged delta long and neutral stategies, Steadefi's vaults cater to different risk/reward strategies to the best yield-generating DeFi protocols.
@@ -113,6 +113,7 @@ contracts
             ├── GMXProcessWithdraw.sol
             ├── GMXReader.sol
             ├── GMXRebalance.sol
+            ├── GMXTrove.sol
             ├── GMXTypes.sol
             ├── GMXVault.sol
             ├── GMXWithdraw.sol
@@ -134,8 +135,6 @@ contracts
     ├── ChainlinkOracle.sol
 ├── mocks
 ├── swaps
-└── utils
-    ├── OptimalDeposit.sol
 ​
 ```
 ​
@@ -182,6 +181,8 @@ Compile all contracts
 ```bash
 yarn compile
 ```
+
+Note: You may need to add Foundry to this Hardhat project if you do not have foundry installed: See instructions hereL: [https://hardhat.org/hardhat-runner/docs/advanced/hardhat-and-foundry](https://hardhat.org/hardhat-runner/docs/advanced/hardhat-and-foundry)
 
 ### Deployment
 Deploy scripts are all in the `/scripts` directory. Short-cut helper bash functions are in `package.json`.
@@ -285,6 +286,7 @@ forge test --match-test test_createDeposit -vvvv
     - The strategy vaults are dependent on keepers running to compound and rebalance the vaults periodically. It should be assumed that the keepers will always be able to run 24/7 to trigger the right functions. However, if there can be issues arising due to such functions, please report them as findings.
 - **GMX Callback failures**
     - The strategy vaults are dependent on GMX's callback to work. GMX's callbacks are only triggered when GMX's keepers successful execute the deposit/withdraw liquidity orders that our vaults submit to it. If GMX's keepers do not work for whatever reason, there is nothing we can do except to cancel the order request. Note that if the attempt to trigger the callback to the vaults by GMX went through BUT it failed, then this should be a finding, as it could be due to faulty code logic on our vaults or too much gas being used in the callback function (there is a 2 million gas limit for callback functions).
+- **GMXTrove only applies if reward tokens are the same as vault's tokenA/tokenB and are airdropped to vault**
 - **No zero address on constructor and functions**
     - We have removed zero address checks on constructor and functions unless they are critical to the core/logic of the vault. This is to reduce gas fees incurred for every trigger of the function, as the function may revert naturally when a zero address is passed in. For e.g., no zero address check needed for getting token price/value from oracles.
 - **Post successful compound() may result in vault's health being out of balance**

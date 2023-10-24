@@ -509,6 +509,10 @@ classDiagram
       +processCompoundCancellation()
     }
 
+    class GMXTrove {
+      +vault
+    }
+
     class GMXEmergency {
       event EmergencyPause
       event EmergencyResume
@@ -595,6 +599,7 @@ classDiagram
     Structs and Enums from GMXTypes"
 
     GMXCallback --> GMXVault
+    GMXTrove --> GMXVault
 
     GMXVault --> GMXDeposit
     GMXVault --> GMXWithdraw
