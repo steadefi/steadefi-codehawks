@@ -274,19 +274,33 @@ Run a particular test with calltrace
 ```bash
 forge test --match-test test_createDeposit -vvvv
 ```
-​
-## Known Issues
 
-- **Vault inflation attack**
-    - Just like other smart contract vaults (like ERC-4626 standard), the vaults are also susceptible to a Inflation/Donation Attack that can be carried out by the first depositor to the vault. We will mitigated this by being the first to deposit a small amount to any new vaults and sending the vault share tokens to the vault contract itself, so it will not be accessible to anyone.
+## Additional Context
 - **Chainlink price feed dependency**
     - The protocol is dependent on Chainlink price feeds operating accurately and correctly. In situations where it does not, the oracle contracts would already revert, therefore preventing further actions with the vaults.
     - It should be assumed that for all accepted tokens in this protocol, there is a price feed for it (the "GM" LP tokens' price comes from GMX itself which uses Chainlink as well)
 - **Keeper dependency**
     - The strategy vaults are dependent on keepers running to compound and rebalance the vaults periodically. It should be assumed that the keepers will always be able to run 24/7 to trigger the right functions. However, if there can be issues arising due to such functions, please report them as findings.
+- **GMXTrove only applies if reward tokens are the same as vault's tokenA/tokenB and are airdropped to vault**
+- **It is expected that Neutral strategy vaults will have a leverage factor of 3x and above**
+    - A leverage of less than 3x (e.g. 2x) for Neutral strategies may not work to correctly to borrow enough long token to hedge while still adhering to the correct leverage factor.
+    - The issue will arise in `GMXManager.calcBorrow()` and `GMXReader.additionalCapacity()` where the computation of shortToken (tokenB) to borrow may underflow.
+    - However, Long strategies are OK to have 2x as they simply borrow short token to leverage up.
+    - As it does not make sense to deploy a Neutral strategy vault with less than 3x leverage as the strategy will fail, we did not add checks to this in the constructor function.
+- **Rounding errors**:
+    - Conversion between scaled and normalized balances inherently incurs some rounding error; we consider rounding errors limited to "dust" (miniscule amounts left unaccounted for) out of scope unless they lead to additional unexpected behavior (e.g. if a rounding error can prevent withdrawal batches from being closed).
+- **Accounting terms**:
+    - Assets = Equity + Debt
+    - Equity = what depositors put into vault
+    - Debt = loans from Lending vaults
+    - Delta = Refers to the position exposure of this vault's strategy to the underlying volatile asset. Delta can be a negative value.
+​
+## Known Issues
+
+- **Vault inflation attack**
+    - Just like other smart contract vaults (like ERC-4626 standard), the vaults are also susceptible to a Inflation/Donation Attack that can be carried out by the first depositor to the vault. We will mitigated this by being the first to deposit a small amount to any new vaults and sending the vault share tokens to the vault contract itself, so it will not be accessible to anyone.
 - **GMX Callback failures**
     - The strategy vaults are dependent on GMX's callback to work. GMX's callbacks are only triggered when GMX's keepers successful execute the deposit/withdraw liquidity orders that our vaults submit to it. If GMX's keepers do not work for whatever reason, there is nothing we can do except to cancel the order request. Note that if the attempt to trigger the callback to the vaults by GMX went through BUT it failed, then this should be a finding, as it could be due to faulty code logic on our vaults or too much gas being used in the callback function (there is a 2 million gas limit for callback functions).
-- **GMXTrove only applies if reward tokens are the same as vault's tokenA/tokenB and are airdropped to vault**
 - **No zero address on constructor and functions**
     - We have removed zero address checks on constructor and functions unless they are critical to the core/logic of the vault. This is to reduce gas fees incurred for every trigger of the function, as the function may revert naturally when a zero address is passed in. For e.g., no zero address check needed for getting token price/value from oracles.
 - **Post successful compound() may result in vault's health being out of balance**
@@ -297,8 +311,17 @@ forge test --match-test test_createDeposit -vvvv
     - In: `GMXDeposit.processDepositFailureLiquidityWithdrawal() and `GMXProcessWithdraw.processWithdraw()`
     - Reminder: A swap deadline timestamp is passed to protect against miners delaying swap transactions until a more favourable time for them to process it.
     - However for the above 2 functions that implements a swap, we decided to allow the deadline to be set as the current block timestamp for these function as they are triggered as a follow up function (by a callback/keeper) and not directly by a user/keeper. If this follow on functions revert due to the swap transaction being processed after a set fixed deadline timestamp, this will cause the vault to be in a "stuck" state. To resolve this, this function will have to be called again with an updated deadline until it succeeds/a miner processes the transaction.
-- **It is expected that Neutral strategy vaults will have a leverage factor of 3x and above**
-    - A leverage of less than 3x (e.g. 2x) for Neutral strategies may not work to correctly to borrow enough long token to hedge while still adhering to the correct leverage factor.
-    - The issue will arise in `GMXManager.calcBorrow()` and `GMXReader.additionalCapacity()` where the computation of shortToken (tokenB) to borrow may underflow.
-    - However, Long strategies are OK to have 2x as they simply borrow short token to leverage up.
-    - As it does not make sense to deploy a Neutral strategy vault with less than 3x leverage as the strategy will fail, we did not add checks to this in the constructor function.
+- **PUSH0 opcode with Solidity version 0.8.21 unsupported on L2 networks**
+     - Known issue and does not cause any issues during compile or runtime during testing
+
+## Attack ideas (Where to look for bugs)
+- **General**
+    - Lenders from lending vaults should be protected from any bad debt or loss of funds as a result of vault's actions. Any flow that results in lending vaults not getting paid back would be critical.
+    - Due to design of GMX v2 where adding/removing liquidity involves two transactions, it could lead to internal accounting issues if the various scenarios (success/cancelled/failure) are not handled properly
+    - All scenarios should be handled to ensure vault eventually returns to an Open status. Consider how a scenario might lead to a stuck vault (other statuses).
+- **Emergency actions**
+    - After emergency actions (pause, close) all loans should be repaid, users' funds secured, and all vault activity should be paused except for emergency withdrawals. Consider ways in which this state might be violated. 
+
+- **Main invariants**
+    - Assuming a 3X leveraged vault, leverage should never deviate too far from 3. Otherwise, it would imply excessive over or under-borrowing from lending vaults which could result in bad debt
+    - After every action (deposit/withdraw/rebalance/compound), the vault should be cleared of any token balances. Violation of this could allow a subsequent depositor to benefit from it. 
