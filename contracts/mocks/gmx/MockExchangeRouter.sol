@@ -194,8 +194,7 @@ contract MockExchangeRouter {
 
       IERC20(sp.tokenIn).transfer(msg.sender, IERC20(sp.tokenIn).balanceOf(address(this)));
       IERC20(sp.tokenOut).transfer(msg.sender, IERC20(sp.tokenOut).balanceOf(address(this)));
-    } catch (bytes memory reason) {
-      console.logBytes(reason);
+    } catch (bytes memory/*reason*/) {
     }
   }
 
@@ -216,8 +215,7 @@ contract MockExchangeRouter {
 
       IERC20(sp.tokenIn).transfer(msg.sender, IERC20(sp.tokenIn).balanceOf(address(this)));
       IERC20(sp.tokenOut).transfer(msg.sender, IERC20(sp.tokenOut).balanceOf(address(this)));
-    } catch (bytes memory reason) {
-      console.logBytes(reason);
+    } catch (bytes memory/*reason*/) {
     }
   }
 

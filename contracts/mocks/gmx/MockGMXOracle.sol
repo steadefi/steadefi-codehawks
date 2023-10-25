@@ -45,8 +45,6 @@ contract MockGMXOracle {
     uint256 longTokenBalance = IERC20(longToken).balanceOf(marketToken);
     uint256 shortTokenBalance = IERC20(shortToken).balanceOf(marketToken);
 
-    // console.log("longTokenBalance", longTokenBalance);
-    // console.log("shortTokenBalance", shortTokenBalance);
     return (longTokenBalance, shortTokenBalance);
   }
 }

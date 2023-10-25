@@ -13,8 +13,6 @@ import { ILendingVault } from  "../../interfaces/lending/ILendingVault.sol";
 import { IChainlinkOracle } from  "../../interfaces/oracles/IChainlinkOracle.sol";
 import { IGMXOracle } from  "../../interfaces/oracles/IGMXOracle.sol";
 import { IExchangeRouter } from "../../interfaces/protocols/gmx/IExchangeRouter.sol";
-import { IDeposit } from "../../interfaces/protocols/gmx/IDeposit.sol";
-import { IWithdrawal } from "../../interfaces/protocols/gmx/IWithdrawal.sol";
 import { ISwap } from "../../interfaces/swap/ISwap.sol";
 import { Errors } from  "../../utils/Errors.sol";
 import { GMXTypes } from  "./GMXTypes.sol";
