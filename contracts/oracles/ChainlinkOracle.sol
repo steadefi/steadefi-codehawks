@@ -48,6 +48,7 @@ contract ChainlinkOracle is Ownable2Step, Pausable {
     */
   function consult(address token) public view whenNotPaused returns (int256, uint8) {
     address _feed = feeds[token];
+
     if (_feed == address(0)) revert Errors.NoTokenPriceFeedAvailable();
 
     ChainlinkResponse memory chainlinkResponse = _getChainlinkResponse(_feed);

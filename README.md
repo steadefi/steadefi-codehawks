@@ -7,9 +7,8 @@
 ​
 ## Contest Details
 - Total Prize Pool: $35,000
-  - HM Awards: $30,000
-  - Low Awards: $5,000
-  - No gas, informational, or QAs
+  - High/Medium Awards: $33,000
+  - Low, gas, informational, or QAs Awards: $2,000
 - Start: 26th October 2023 12:00pm UTC
 - End: 6th November 2023 12:00pm UTC
 ​
@@ -146,12 +145,12 @@ Tokens on Avalanche:
 ## Setup
 Install all project dependencies with yarn
 ```bash
-yarn
+$ yarn
 ```
 
 Compile all contracts
 ```bash
-yarn compile
+$ yarn compile
 ```
 
 Note: You may need to add Foundry to this Hardhat project if you do not have foundry installed: See instructions hereL: [https://hardhat.org/hardhat-runner/docs/advanced/hardhat-and-foundry](https://hardhat.org/hardhat-runner/docs/advanced/hardhat-and-foundry)
@@ -174,7 +173,7 @@ PRIVATE_KEY_DEPLOYER=<PRIVATE_KEY_OF_DEPLOYER_WALLET>
 
 **1) Deploy Chainlink Oracle**
 ```bash
-npx hardhat run --network arbitrumOne scripts/arb/oracles/deploy-oracle-chainlink-arb.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/oracles/deploy-oracle-chainlink-arb.ts
 ```
 Note that the price feeds for ETH and USDC should be updated to this oracle.
 
@@ -182,13 +181,13 @@ This oracle is re-usable for future Arbitrum protocol oracles and strategy vault
 
 **2) Deploy GMX Oracle**
 ```bash
-npx hardhat run --network arbitrumOne scripts/arb/oracles/deploy-oracle-gmx.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/oracles/deploy-oracle-gmx.ts
 ```
 This oracle is re-usable for future GMX strategy vaults.
 
 **3) Deploy a Swap**
 ```bash
-npx hardhat run --network arbitrumOne scripts/arb/swap/deploy-swap-uniswap.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/swap/deploy-swap-uniswap.ts
 ```
 Note that the fee tiers for ETH and USDC swap pool should be updated in this swap.
 
@@ -197,10 +196,10 @@ This swap is re-usable for future Arbitrum strategy vaults.
 **4) Deploy Lending Vaults**
 ```bash
 # Deploy a native ETH Lending Vault
-npx hardhat run --network arbitrumOne scripts/arb/lending/deploy-lending-vault-native.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/lending/deploy-lending-vault-native.ts
 
 # Deploy a USDC Lending Vault
-npx hardhat run --network arbitrumOne scripts/arb/lending/deploy-lending-vault-stable.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/lending/deploy-lending-vault-stable.ts
 ```
 
 These lending vaults will be re-usable for future ETH-USDC GMX strategy vaults.
@@ -208,13 +207,13 @@ These lending vaults will be re-usable for future ETH-USDC GMX strategy vaults.
 **5) Deploy Strategy Vaults**
 ```bash
 # Deploy re-usable strategy vault external library contracts
-npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-libraries.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-libraries.ts
 
 # Deploy a Leveraged Long strategy vault
-npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-long-eth.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-long-eth.ts
 
 # Deploy a Leveraged Neutral strategy vault
-npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-neutral-eth.ts
+$ npx hardhat run --network arbitrumOne scripts/arb/strategy/gmx/deploy-strategy-gmx-neutral-eth.ts
 ```
 
 The library contracts deployed will also be re-usable for other GMX strategy vaults.
@@ -229,22 +228,22 @@ The library contracts deployed will also be re-usable for other GMX strategy vau
 
 Tests coverage
 ```bash
-forge coverage
+$ forge coverage
 ```
 
 Run all tests
 ```bash
-forge test
+$ forge test
 ```
 
 Run a particular test suite
 ```bash
-forge test --match-contract GMXDepositTest
+$ forge test --match-contract GMXDepositTest
 ```
 
 Run a particular test with calltrace
 ```bash
-forge test --match-test test_createDeposit -vvvv
+$ forge test --match-test test_createDeposit -vvvv
 ```
 
 ## Additional Context

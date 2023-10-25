@@ -76,7 +76,7 @@ contract ChainlinkARBOracle is Ownable2Step, Pausable {
   /**
     * @notice Get token price from Chainlink feed returned in 1e18
     * @param token Token address
-    * @return price expressed in 1e18
+    * @return price in 1e18
   */
   function consultIn18Decimals(address token) external view whenNotPaused returns (uint256) {
     (int256 _answer, uint8 _decimals) = consult(token);
