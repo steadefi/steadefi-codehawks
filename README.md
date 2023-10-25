@@ -40,39 +40,11 @@ There are 2 types of vaults: **Lending Vaults** and **Strategy Vaults**.
 
 A typical set up for 3x Leverage, Delta Long and Delta Neutral strategies to the ETH-USDC GM LP pool on GMXv2, with isolated ETH and USDC lending vaults are as follows:
 
-```mermaid
-graph TD
-  SVL["3x Long ETH-USDC GMX"]
-  SVN["3x Neutral ETH-USDC GMX"]
-  LVE["ETH Lending Vault"]
-  LVU["USDC Lending Vault"]
-  L(("Lender"))
-  D(("Depositor"))
-
-  style SVL fill:blue,stroke:blue,color:white
-  style SVN fill:blue,stroke:blue,color:white
-  style LVE fill:blue,stroke:blue,color:white
-  style LVU fill:blue,stroke:blue,color:white
-  style L fill:green,stroke:green,color:white
-  style D fill:green,stroke:green,color:white
-
-  D <--->|Deposit/Withdraw ETH/USDC/ETH-USDC LP| SVL
-  D <--->|Deposit/Withdraw ETH/USDC/ETH-USDC LP| SVN
-
-  SVL <--->|Borrow/Repay USDC for Leverage| LVU
-  SVN <--->|Borrow/Repay USDC for Leverage| LVU
-  SVN <--->|Borrow/Repay ETH for Delta Hedging| LVE
-
-  LVE <--->|Deposit/Withdraw ETH| L
-  LVU <--->|Deposit/Withdraw USDC| L
-```
+![Protocol Overview](/docs/img/protocol-overview.png)
 
 > Note that Delta Long strategies borrow only USDC for more leverage, while Delta Neutral strategies borrow both USDC for leverage **as well as** borrow ETH in order to delta hedge the ETH exposure of the liquidity provided to the ETH-USDC GM LP pool (borrowing = hedging).
 
-### Steadefi Front-End Interface Screenshot
-![Lending and Strategy Vaults Setup](/docs/img/lending-strategy-vaults-screenshot.png)
-
-### Further Documentation
+### Further Technical Documentation
 🚨 **For more details, please check out the [Technical Documentation](./docs/technical-documentation.md) directory in this repository.**
 
 
@@ -320,8 +292,8 @@ forge test --match-test test_createDeposit -vvvv
     - Due to design of GMX v2 where adding/removing liquidity involves two transactions, it could lead to internal accounting issues if the various scenarios (success/cancelled/failure) are not handled properly
     - All scenarios should be handled to ensure vault eventually returns to an Open status. Consider how a scenario might lead to a stuck vault (other statuses).
 - **Emergency actions**
-    - After emergency actions (pause, close) all loans should be repaid, users' funds secured, and all vault activity should be paused except for emergency withdrawals. Consider ways in which this state might be violated. 
+    - After emergency actions (pause, close) all loans should be repaid, users' funds secured, and all vault activity should be paused except for emergency withdrawals. Consider ways in which this state might be violated.
 
 - **Main invariants**
     - Assuming a 3X leveraged vault, leverage should never deviate too far from 3. Otherwise, it would imply excessive over or under-borrowing from lending vaults which could result in bad debt
-    - After every action (deposit/withdraw/rebalance/compound), the vault should be cleared of any token balances. Violation of this could allow a subsequent depositor to benefit from it. 
+    - After every action (deposit/withdraw/rebalance/compound), the vault should be cleared of any token balances. Violation of this could allow a subsequent depositor to benefit from it.
