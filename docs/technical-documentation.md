@@ -11,7 +11,7 @@
   - [Delta Neutral](#delta-neutral)
   - [Automated Rebalancing](#automated-rebalancing)
   - [GMX v2 High Level Sequence](#gmx-v2-high-level-sequence)
-  - [## Strategy Vault Contracts Architecture](#strategy-vault-contracts-architecture)
+  - [Strategy Vault Contracts Architecture](#strategy-vault-contracts-architecture)
   - [Strategy Vault Actions](#strategy-vault-actions)
   - [Strategy Vault Sequence Diagrams](#strategy-vault-sequence-diagrams)
 
