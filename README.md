@@ -46,6 +46,8 @@ A typical set up for 3x Leverage, Delta Long and Delta Neutral strategies to the
 ### Further Technical Documentation
 🚨 **For more details, please check out the [Technical Documentation](./docs/technical-documentation.md) directory in this repository.**
 
+### Recorded Video for Codehawks
+[Recorded Explainer Video](https://www.loom.com/share/88ce04a31a4343439cdc9501a6a9448a)
 
 ## Actors
 | Role | Responsibilities |
