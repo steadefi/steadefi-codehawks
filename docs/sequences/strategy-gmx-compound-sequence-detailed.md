@@ -28,7 +28,7 @@ sequenceDiagram
   else `removeLiquidity()` Failed
     GMX ->> GMXCallback: `afterDepositCancellation()`
     GMXCallback ->> GMXVault: `processCompoundCancellation()`
-    GMXVault ->> GMXVault: Vault.Status = Open
+    GMXVault ->> GMXVault: Vault.Status = Compound_Failed
     GMXVault ->> GMXVault: emits CompoundCancelled() event
 
   end
